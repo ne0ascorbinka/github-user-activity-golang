@@ -72,7 +72,25 @@ func (e Event) ProcessWatchEvent() {
 }
 
 func (e Event) ProcessPullRequestEvent() {
-
+	action := e.Payload.Action
+	switch action {
+	case "opened":
+		fmt.Printf("Opened a pull request in %s\n", e.Repo.Name)
+	case "closed":
+		fmt.Printf("Closed a pull request in %s\n", e.Repo.Name)
+	case "merged":
+		fmt.Printf("Merged a pull request in %s\n", e.Repo.Name)
+	case "reopened":
+		fmt.Printf("Reopened a pull request in %s\n", e.Repo.Name)
+	case "assigned":
+		fmt.Printf("Assigned a user to a pull request in %s\n", e.Repo.Name)
+	case "unassigned":
+		fmt.Printf("Unassigned a user from a pull request in %s\n", e.Repo.Name)
+	case "labeled":
+		fmt.Printf("Added a label to a pull request in %s\n", e.Repo.Name)
+	case "unlabeled":
+		fmt.Printf("Removed a label from a pull request in %s\n", e.Repo.Name)
+	}
 }
 
 func (e Event) ProcessPullRequestReviewEvent() {
