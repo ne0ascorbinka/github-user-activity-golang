@@ -11,10 +11,14 @@ import (
 type EventType string
 
 const (
-	EVENT_TYPE_CREATE EventType = "CreateEvent"
-	EVENT_TYPE_PUSH   EventType = "PushEvent"
-	EVENT_TYPE_ISSUES EventType = "IssuesEvent"
-	EVENT_TYPE_WATCH  EventType = "WatchEvent"
+	EVENT_TYPE_CREATE            EventType = "CreateEvent"
+	EVENT_TYPE_PUSH              EventType = "PushEvent"
+	EVENT_TYPE_ISSUES            EventType = "IssuesEvent"
+	EVENT_TYPE_WATCH             EventType = "WatchEvent"
+	EVENT_TYPE_PR                EventType = "PullRequestEvent"
+	EVENT_TYPE_PR_REVIEW         EventType = "PullRequestReviewEvent"
+	EVENT_TYPE_PR_REVIEW_COMMENT EventType = "PullRequestReviewCommentEvent"
+	EVENT_TYPE_RELEASE           EventType = "ReleaseEvent"
 )
 
 type Event struct {
@@ -67,6 +71,22 @@ func (e Event) ProcessWatchEvent() {
 	}
 }
 
+func (e Event) ProcessPullRequestEvent() {
+
+}
+
+func (e Event) ProcessPullRequestReviewEvent() {
+
+}
+
+func (e Event) ProcessPullRequestReviewCommentEvent() {
+
+}
+
+func (e Event) ProcessReleaseEvent() {
+
+}
+
 func (e Event) ProcessEvent() {
 	switch e.Type {
 	case EVENT_TYPE_PUSH:
@@ -77,6 +97,14 @@ func (e Event) ProcessEvent() {
 		e.ProcessCreateEvent()
 	case EVENT_TYPE_WATCH:
 		e.ProcessWatchEvent()
+	case EVENT_TYPE_PR:
+		e.ProcessPullRequestEvent()
+	case EVENT_TYPE_PR_REVIEW:
+		e.ProcessPullRequestReviewEvent()
+	case EVENT_TYPE_PR_REVIEW_COMMENT:
+		e.ProcessPullRequestReviewCommentEvent()
+	case EVENT_TYPE_RELEASE:
+		e.ProcessReleaseEvent()
 	default:
 		fmt.Printf("Skipping unknown event of type %s\n", e.Type)
 	}
