@@ -14,16 +14,18 @@ const (
 	EVENT_TYPE_CREATE EventType = "CreateEvent"
 	EVENT_TYPE_PUSH   EventType = "PushEvent"
 	EVENT_TYPE_ISSUES EventType = "IssuesEvent"
+	EVENT_TYPE_WATCH  EventType = "WatchEvent"
 )
 
-type Event struct{
+type Event struct {
 	// ID int `json:"id"`
 	Type EventType `json:"type"`
-	Repo struct{
+	Repo struct {
 		Name string `json:"name"`
 	} `json:"repo"`
-	Payload struct{
-		Action string `json:"action"`
+	Payload struct {
+		Action  string `json:"action"`
+		RefType string `json:"ref_type"`
 	} `json:"payload"`
 }
 
@@ -44,12 +46,37 @@ func (e Event) ProcessIssuesEvent() {
 	}
 }
 
+func (e Event) ProcessCreateEvent() {
+	switch e.Payload.RefType {
+	case "branch":
+		fmt.Printf("Created a branch in %s\n", e.Repo.Name)
+	case "tag":
+		fmt.Printf("Created a tag in %s\n", e.Repo.Name)
+	case "repository":
+		fmt.Printf("Created a repository %s\n", e.Repo.Name)
+	}
+}
+
+func (e Event) ProcessWatchEvent() {
+	action := e.Payload.Action
+	switch action {
+	case "started":
+		fmt.Printf("Starred %s\n", e.Repo.Name)
+	default:
+		fmt.Printf("Unknown WatchEvent action: %s\n", action)
+	}
+}
+
 func (e Event) ProcessEvent() {
 	switch e.Type {
 	case EVENT_TYPE_PUSH:
 		e.ProcessPushEvent()
 	case EVENT_TYPE_ISSUES:
 		e.ProcessIssuesEvent()
+	case EVENT_TYPE_CREATE:
+		e.ProcessCreateEvent()
+	case EVENT_TYPE_WATCH:
+		e.ProcessWatchEvent()
 	default:
 		fmt.Printf("Skipping unknown event of type %s\n", e.Type)
 	}
