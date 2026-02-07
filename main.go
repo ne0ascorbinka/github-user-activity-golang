@@ -94,7 +94,15 @@ func (e Event) ProcessPullRequestEvent() {
 }
 
 func (e Event) ProcessPullRequestReviewEvent() {
-
+	action := e.Payload.Action
+	switch action {
+	case "created":
+		fmt.Printf("Created a review to a pull request in %s\n", e.Repo.Name)
+	case "updated":
+		fmt.Printf("Updated a review to a pull request in %s\n", e.Repo.Name)
+	case "dismissed":
+		fmt.Printf("Dismissed a review from a pull request in %s\n", e.Repo.Name)
+	}
 }
 
 func (e Event) ProcessPullRequestReviewCommentEvent() {
