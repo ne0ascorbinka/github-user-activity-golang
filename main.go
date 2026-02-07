@@ -24,6 +24,7 @@ type Event struct{
 	} `json:"repo"`
 	Payload struct{
 		Action string `json:"action"`
+		RefType string `json:"ref_type"`
 	} `json:"payload"`
 }
 
@@ -44,12 +45,25 @@ func (e Event) ProcessIssuesEvent() {
 	}
 }
 
+func (e Event) ProcessCreateEvent() {
+	switch e.Payload.RefType {
+	case "branch":
+		fmt.Printf("Created a branch in %s\n", e.Repo.Name)
+	case "tag":
+		fmt.Printf("Created a tag in %s\n", e.Repo.Name)
+	case "repository":
+		fmt.Printf("Created a repository %s\n", e.Repo.Name)
+	}
+}
+
 func (e Event) ProcessEvent() {
 	switch e.Type {
 	case EVENT_TYPE_PUSH:
 		e.ProcessPushEvent()
 	case EVENT_TYPE_ISSUES:
 		e.ProcessIssuesEvent()
+	case EVENT_TYPE_CREATE:
+		e.ProcessCreateEvent()
 	default:
 		fmt.Printf("Skipping unknown event of type %s\n", e.Type)
 	}
