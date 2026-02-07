@@ -110,7 +110,7 @@ func (e Event) ProcessPullRequestReviewCommentEvent() {
 }
 
 func (e Event) ProcessReleaseEvent() {
-
+	fmt.Printf("Published a release in %s\n", e.Repo.Name)
 }
 
 func (e Event) ProcessEvent() {
