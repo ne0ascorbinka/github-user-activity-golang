@@ -13,6 +13,7 @@ type EventType string
 const (
 	EVENT_TYPE_CREATE EventType = "CreateEvent"
 	EVENT_TYPE_PUSH   EventType = "PushEvent"
+	EVENT_TYPE_ISSUES EventType = "IssuesEvent"
 )
 
 type Event struct{
@@ -21,6 +22,9 @@ type Event struct{
 	Repo struct{
 		Name string `json:"name"`
 	} `json:"repo"`
+	Payload struct{
+		Action string `json:"action"`
+	} `json:"payload"`
 }
 
 type Events []Event
@@ -29,10 +33,23 @@ func (e Event) ProcessPushEvent() {
 	fmt.Printf("Pushed to %s\n", e.Repo.Name)
 }
 
+func (e Event) ProcessIssuesEvent() {
+	switch e.Payload.Action {
+	case "opened":
+		fmt.Printf("Opened a new issue in %s\n", e.Repo.Name)
+	case "closed":
+		fmt.Printf("Closed an issue in %s\n", e.Repo.Name)
+	case "reopened":
+		fmt.Printf("Reopened an issue in %s\n", e.Repo.Name)
+	}
+}
+
 func (e Event) ProcessEvent() {
 	switch e.Type {
 	case EVENT_TYPE_PUSH:
 		e.ProcessPushEvent()
+	case EVENT_TYPE_ISSUES:
+		e.ProcessIssuesEvent()
 	default:
 		fmt.Printf("Skipping unknown event of type %s\n", e.Type)
 	}
