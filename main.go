@@ -106,7 +106,13 @@ func (e Event) ProcessPullRequestReviewEvent() {
 }
 
 func (e Event) ProcessPullRequestReviewCommentEvent() {
-
+	action := e.Payload.Action
+	switch action {
+	case "created":
+		fmt.Printf("Commented on a pull request in %s\n", e.Repo.Name)
+	default:
+		fmt.Printf("Unknown PullRequestReviewCommentEvent action: %q\n", action)
+	}
 }
 
 func (e Event) ProcessReleaseEvent() {
