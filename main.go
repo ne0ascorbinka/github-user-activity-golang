@@ -12,8 +12,16 @@ type EventType string
 
 const (
 	EVENT_TYPE_CREATE            EventType = "CreateEvent"
+	EVENT_TYPE_COMMIT_COMMENT    EventType = "CommitCommentEvent"
+	EVENT_TYPE_DELETE            EventType = "DeleteEvent"
+	EVENT_TYPE_DISCUSSION        EventType = "DiscussionEvent"
+	EVENT_TYPE_FORK              EventType = "ForkEvent"
+	EVENT_TYPE_GOLLUM            EventType = "GollumEvent"
 	EVENT_TYPE_PUSH              EventType = "PushEvent"
+	EVENT_TYPE_ISSUE_COMMENT     EventType = "IssueCommentEvent"
 	EVENT_TYPE_ISSUES            EventType = "IssuesEvent"
+	EVENT_TYPE_MEMBER            EventType = "MemberEvent"
+	EVENT_TYPE_PUBLIC            EventType = "PublicEvent"
 	EVENT_TYPE_WATCH             EventType = "WatchEvent"
 	EVENT_TYPE_PR                EventType = "PullRequestEvent"
 	EVENT_TYPE_PR_REVIEW         EventType = "PullRequestReviewEvent"
@@ -119,6 +127,72 @@ func (e Event) ProcessReleaseEvent() {
 	fmt.Printf("Published a release in %s\n", e.Repo.Name)
 }
 
+func (e Event) ProcessCommitCommentEvent() {
+	switch e.Payload.Action {
+	case "created":
+		fmt.Printf("Commented on a commit in %s\n", e.Repo.Name)
+	default:
+		fmt.Printf("Unknown CommitCommentEvent action: %q\n", e.Payload.Action)
+	}
+}
+
+func (e Event) ProcessDeleteEvent() {
+	switch e.Payload.RefType {
+	case "branch":
+		fmt.Printf("Deleted a branch in %s\n", e.Repo.Name)
+	case "tag":
+		fmt.Printf("Deleted a tag in %s\n", e.Repo.Name)
+	default:
+		fmt.Printf("Unknown DeleteEvent ref_type: %q\n", e.Payload.RefType)
+	}
+}
+
+func (e Event) ProcessDiscussionEvent() {
+	switch e.Payload.Action {
+	case "created":
+		fmt.Printf("Created a discussion in %s\n", e.Repo.Name)
+	default:
+		fmt.Printf("Unknown DiscussionEvent action: %q\n", e.Payload.Action)
+	}
+}
+
+func (e Event) ProcessForkEvent() {
+	switch e.Payload.Action {
+	case "forked":
+		fmt.Printf("Forked a repository in %s\n", e.Repo.Name)
+	default:
+		fmt.Printf("Unknown ForkEvent action: %q\n", e.Payload.Action)
+	}
+}
+
+func (e Event) ProcessGollumEvent() {
+	// We intentionally keep this simple; wiki changes can include multiple pages.
+	fmt.Printf("Updated the wiki in %s\n", e.Repo.Name)
+}
+
+func (e Event) ProcessIssueCommentEvent() {
+	switch e.Payload.Action {
+	case "created":
+		fmt.Printf("Commented on an issue in %s\n", e.Repo.Name)
+	default:
+		fmt.Printf("Unknown IssueCommentEvent action: %q\n", e.Payload.Action)
+	}
+}
+
+func (e Event) ProcessMemberEvent() {
+	switch e.Payload.Action {
+	case "added":
+		fmt.Printf("Added a member to %s\n", e.Repo.Name)
+	default:
+		fmt.Printf("Unknown MemberEvent action: %q\n", e.Payload.Action)
+	}
+}
+
+func (e Event) ProcessPublicEvent() {
+	// PublicEvent payload is empty.
+	fmt.Printf("Made repository %s public\n", e.Repo.Name)
+}
+
 func (e Event) ProcessEvent() {
 	switch e.Type {
 	case EVENT_TYPE_PUSH:
@@ -127,8 +201,20 @@ func (e Event) ProcessEvent() {
 		e.ProcessIssuesEvent()
 	case EVENT_TYPE_CREATE:
 		e.ProcessCreateEvent()
+	case EVENT_TYPE_COMMIT_COMMENT:
+		e.ProcessCommitCommentEvent()
+	case EVENT_TYPE_DELETE:
+		e.ProcessDeleteEvent()
+	case EVENT_TYPE_DISCUSSION:
+		e.ProcessDiscussionEvent()
+	case EVENT_TYPE_FORK:
+		e.ProcessForkEvent()
+	case EVENT_TYPE_GOLLUM:
+		e.ProcessGollumEvent()
 	case EVENT_TYPE_WATCH:
 		e.ProcessWatchEvent()
+	case EVENT_TYPE_ISSUE_COMMENT:
+		e.ProcessIssueCommentEvent()
 	case EVENT_TYPE_PR:
 		e.ProcessPullRequestEvent()
 	case EVENT_TYPE_PR_REVIEW:
@@ -137,6 +223,10 @@ func (e Event) ProcessEvent() {
 		e.ProcessPullRequestReviewCommentEvent()
 	case EVENT_TYPE_RELEASE:
 		e.ProcessReleaseEvent()
+	case EVENT_TYPE_MEMBER:
+		e.ProcessMemberEvent()
+	case EVENT_TYPE_PUBLIC:
+		e.ProcessPublicEvent()
 	default:
 		fmt.Printf("Skipping unknown event of type %s\n", e.Type)
 	}
